@@ -1,46 +1,73 @@
 <!DOCTYPE html><html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Malla Curricular Psicología - Azul Pastel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Malla Curricular de Psicología</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #eafaff;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: #e6f7fb;
       color: #333;
       margin: 0;
-      padding: 2rem;
+      padding: 1rem;
     }
     h1 {
       text-align: center;
-      color: #4a90a4;
+      color: #359dbb;
+      margin-bottom: 0.5rem;
+    }
+    .progress {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      color: #2a6f82;
     }
     .grid {
       display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .year-block {
+      background-color: #d1f0f6;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .year-title {
+      text-align: center;
+      color: #2f91a2;
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+    .cycles {
+      display: flex;
       gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     .column {
-      min-width: 270px;
-      background-color: #d0f0f7;
+      background-color: #e0fbff;
       border-radius: 10px;
       padding: 1rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 260px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.03);
+      flex-shrink: 0;
     }
     .column h2 {
-      color: #3c8dac;
-      font-size: 1.1rem;
+      color: #268a99;
+      font-size: 1rem;
+      text-align: center;
       margin-bottom: 0.5rem;
     }
     .course {
       margin: 0.4rem 0;
       padding: 0.5rem;
       background-color: #b2ebf2;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       position: relative;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, transform 0.1s;
+      text-align: center;
     }
     .course.locked {
       background-color: #cceff0;
@@ -48,8 +75,9 @@
       opacity: 0.6;
     }
     .course.approved {
-      background-color: #c8e6c9;
+      background-color: #a6e3e9;
       text-decoration: line-through;
+      font-style: italic;
     }
     .tooltip {
       position: absolute;
@@ -63,6 +91,7 @@
       white-space: nowrap;
       transform: translateY(-50%);
       display: none;
+      z-index: 1;
     }
     .course.locked:hover .tooltip {
       display: block;
@@ -71,19 +100,174 @@
 </head>
 <body>
   <h1>Malla Curricular de Psicología</h1>
+  <div class="progress" id="progressCounter">Ramos aprobados: 0</div>
   <div class="grid" id="curriculum"></div>
   <script>
-    const data = JSON.parse(localStorage.getItem("psych-curriculum-blue")) || {};const curriculum = [
-
-{ year: "PRIMER AÑO", cycles: [ { name: "Primer ciclo", courses: [ "Introducción a la Psicología", "Desempeño Universitario", "Biología", "Lengua y Comunicación", "Matemática General", "Filosofía", "Taller de Expresión Corporal" ] }, { name: "Segundo ciclo", courses: [ { name: "Historia y Sistemas Psicológicos", req: ["Introducción a la Psicología"] }, "Lógica", { name: "Morfofisiologia del Sistema Nervioso", req: ["Biología"] }, { name: "Estadística General", req: ["Matemática General"] }, "Introducción a las Ciencias Sociales", { name: "Educación Ambiental", req: ["Biología"] }, { name: "Taller de Presentaciones Efectivas", req: ["Taller de Expresión Corporal"] } ] } ] }, { year: "SEGUNDO AÑO", cycles: [ { name: "Tercer ciclo", courses: [ { name: "Taller de Desarrollo Personal I", req: ["Taller de Presentaciones Efectivas"] }, { name: "Realidad Nacional", req: ["Desempeño Universitario"] }, { name: "Psicología de la Personalidad", req: ["Historia y Sistemas Psicológicos"] }, { name: "Psicobiología", req: ["Morfofisiologia del Sistema Nervioso"] }, { name: "Procesos Cognitivos", req: ["Historia y Sistemas Psicológicos"] }, { name: "Introducción a la Investigación", req: ["Lengua y Comunicación", "Introducción a la Psicología"] }, "Inglés", { name: "Estadística Aplicada a la Psicología", req: ["Estadística General"] }, { name: "Desarrollo Psicológico I", req: ["Morfofisiologia del Sistema Nervioso", "Historia y Sistemas Psicológicos"] } ] }, { name: "Cuarto ciclo", courses: [ { name: "Taller de Desarrollo Personal II", req: ["Taller de Desarrollo Personal I"] }, { name: "Psicometría", req: ["Estadística Aplicada a la Psicología"] }, { name: "Psicología Social", req: ["Realidad Nacional"] }, { name: "Psicoanálisis", req: ["Psicología de la Personalidad"] }, { name: "Procesos Afectivos-Emocionales", req: ["Psicobiología"] }, { name: "Motivación y Emoción", req: ["Psicobiología"] }, { name: "Desarrollo Psicológico II", req: ["Desarrollo Psicológico I"] } ] } ] }, { year: "TERCER AÑO", cycles: [ { name: "Quinto ciclo", courses: [ { name: "Psicopatología I", req: ["Motivación y Emoción", "Psicología de la Personalidad"] }, { name: "Psicología del Aprendizaje", req: ["Motivación y Emoción"] }, { name: "Psicología de las Organizaciones", req: ["Psicología Social"] }, { name: "Pruebas Psicológicas I", req: ["Psicometría"] }, { name: "Modelo Psicoterapéutico Humanista", req: ["Psicoanálisis"] }, { name: "Entrevista y Observación Psicológica", req: ["Desarrollo Psicológico II"] } ] }, { name: "Sexto ciclo", courses: [ { name: "Psicopatología II", req: ["Psicopatología I"] }, { name: "Psicología de la Sexualidad", req: ["Modelo Psicoterapéutico Humanista"] }, { name: "Psicología Educativa", req: ["Psicología del Aprendizaje"] }, { name: "Pruebas Psicológicas II", req: ["Pruebas Psicológicas I"] }, { name: "Dinámica y Abordaje de Grupos", req: ["Psicología Social"] }, { name: "Consejo Psicológico", req: ["Entrevista y Observación Psicológica"] } ] } ] }, { year: "CUARTO AÑO", cycles: [ { name: "Séptimo ciclo", courses: [ { name: "Psicología Positiva", req: ["Psicología de la Sexualidad"] }, { name: "Psicología Comunitaria y Ambiental", req: ["Dinámica y Abordaje de Grupos"] }, { name: "Neuropsicología", req: ["Entrevista y Observación Psicológica", "Psicopatología II"] }, { name: "Modelo Psicoterapéutico Cognitivo-Conductual", req: ["Consejo Psicológico"] }, { name: "Evaluación y Diagnóstico Psicológico", req: ["Pruebas Psicológicas II"] }, { name: "Comportamiento y Cultura Organizacional", req: ["Psicología de las Organizaciones"] } ] }, { name: "Octavo ciclo", courses: [ { name: "Psicología Clínica y de la Salud", req: ["Psicología Positiva"] }, { name: "Programas de Intervención Aplicados a la Psicología", req: ["Psicología Comunitaria y Ambiental"] }, { name: "Orientación Vocacional y Profesional", req: ["Consejo Psicológico", "Evaluación y Diagnóstico Psicológico"] }, { name: "Modelo Psicoterapéutico Familiar Sistémico", req: ["Evaluación y Diagnóstico Psicológico"] }, { name: "Metodología de la Investigación para Psicología", req: ["Psicometría"] }, { name: "Integrity and Professional Ethics", req: ["Evaluación y Diagnóstico Psicológico"] } ] } ] }, { year: "QUINTO AÑO", cycles: [ { name: "Noveno ciclo", courses: [ { name: "Seminario de Tesis", req: ["Metodología de la Investigación para Psicología"] }, { name: "Internado I", req: ["Integrity and Professional Ethics"] } ] }, { name: "Décimo ciclo", courses: [ { name: "Trabajo de investigación", req: ["Seminario de Tesis"] }, { name: "Internado II", req: ["Internado I"] } ] } ] } ];
+    const STORAGE_KEY = "psych-curriculum-blue";
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};const curriculum = [
+  // PRIMER AÑO
+  {
+    year: "PRIMER AÑO",
+    cycles: [
+      {
+        name: "Primer ciclo",
+        courses: [
+          "Introducción a la Psicología",
+          "Desempeño Universitario",
+          "Biología",
+          "Lengua y Comunicación",
+          "Matemática General",
+          "Filosofía",
+          "Taller de Expresión Corporal"
+        ]
+      },
+      {
+        name: "Segundo ciclo",
+        courses: [
+          { name: "Historia y Sistemas Psicológicos", req: ["Introducción a la Psicología"] },
+          "Lógica",
+          { name: "Morfofisiologia del Sistema Nervioso", req: ["Biología"] },
+          { name: "Estadística General", req: ["Matemática General"] },
+          "Introducción a las Ciencias Sociales",
+          { name: "Educación Ambiental", req: ["Biología"] },
+          { name: "Taller de Presentaciones Efectivas", req: ["Taller de Expresión Corporal"] }
+        ]
+      }
+    ]
+  },
+  // SEGUNDO AÑO
+  {
+    year: "SEGUNDO AÑO",
+    cycles: [
+      {
+        name: "Tercer ciclo",
+        courses: [
+          { name: "Taller de Desarrollo Personal I", req: ["Taller de Presentaciones Efectivas"] },
+          { name: "Realidad Nacional", req: ["Desempeño Universitario"] },
+          { name: "Psicología de la Personalidad", req: ["Historia y Sistemas Psicológicos"] },
+          { name: "Psicobiología", req: ["Morfofisiologia del Sistema Nervioso"] },
+          { name: "Procesos Cognitivos", req: ["Historia y Sistemas Psicológicos"] },
+          { name: "Introducción a la Investigación", req: ["Lengua y Comunicación", "Introducción a la Psicología"] },
+          "Inglés",
+          { name: "Estadística Aplicada a la Psicología", req: ["Estadística General"] },
+          { name: "Desarrollo Psicológico I", req: ["Morfofisiologia del Sistema Nervioso", "Historia y Sistemas Psicológicos"] }
+        ]
+      },
+      {
+        name: "Cuarto ciclo",
+        courses: [
+          { name: "Taller de Desarrollo Personal II", req: ["Taller de Desarrollo Personal I"] },
+          { name: "Psicometría", req: ["Estadística Aplicada a la Psicología"] },
+          { name: "Psicología Social", req: ["Realidad Nacional"] },
+          { name: "Psicoanálisis", req: ["Psicología de la Personalidad"] },
+          { name: "Procesos Afectivos-Emocionales", req: ["Psicobiología"] },
+          { name: "Motivación y Emoción", req: ["Psicobiología"] },
+          { name: "Desarrollo Psicológico II", req: ["Desarrollo Psicológico I"] }
+        ]
+      }
+    ]
+  },
+  // TERCER AÑO
+  {
+    year: "TERCER AÑO",
+    cycles: [
+      {
+        name: "Quinto ciclo",
+        courses: [
+          { name: "Psicopatología I", req: ["Motivación y Emoción", "Psicología de la Personalidad"] },
+          { name: "Psicología del Aprendizaje", req: ["Motivación y Emoción"] },
+          { name: "Psicología de las Organizaciones", req: ["Psicología Social"] },
+          { name: "Pruebas Psicológicas I", req: ["Psicometría"] },
+          { name: "Modelo Psicoterapéutico Humanista", req: ["Psicoanálisis"] },
+          { name: "Entrevista y Observación Psicológica", req: ["Desarrollo Psicológico II"] }
+        ]
+      },
+      {
+        name: "Sexto ciclo",
+        courses: [
+          { name: "Psicopatología II", req: ["Psicopatología I"] },
+          { name: "Psicología de la Sexualidad", req: ["Modelo Psicoterapéutico Humanista"] },
+          { name: "Psicología Educativa", req: ["Psicología del Aprendizaje"] },
+          { name: "Pruebas Psicológicas II", req: ["Pruebas Psicológicas I"] },
+          { name: "Dinámica y Abordaje de Grupos", req: ["Psicología Social"] },
+          { name: "Consejo Psicológico", req: ["Entrevista y Observación Psicológica"] }
+        ]
+      }
+    ]
+  },
+  // CUARTO AÑO
+  {
+    year: "CUARTO AÑO",
+    cycles: [
+      {
+        name: "Séptimo ciclo",
+        courses: [
+          { name: "Psicología Positiva", req: ["Psicología de la Sexualidad"] },
+          { name: "Psicología Comunitaria y Ambiental", req: ["Dinámica y Abordaje de Grupos"] },
+          { name: "Neuropsicología", req: ["Entrevista y Observación Psicológica", "Psicopatología II"] },
+          { name: "Modelo Psicoterapéutico Cognitivo-Conductual", req: ["Consejo Psicológico"] },
+          { name: "Evaluación y Diagnóstico Psicológico", req: ["Pruebas Psicológicas II"] },
+          { name: "Comportamiento y Cultura Organizacional", req: ["Psicología de las Organizaciones"] }
+        ]
+      },
+      {
+        name: "Octavo ciclo",
+        courses: [
+          { name: "Psicología Clínica y de la Salud", req: ["Psicología Positiva"] },
+          { name: "Programas de Intervención Aplicados a la Psicología", req: ["Psicología Comunitaria y Ambiental"] },
+          { name: "Orientación Vocacional y Profesional", req: ["Consejo Psicológico", "Evaluación y Diagnóstico Psicológico"] },
+          { name: "Modelo Psicoterapéutico Familiar Sistémico", req: ["Evaluación y Diagnóstico Psicológico"] },
+          { name: "Metodología de la Investigación para Psicología", req: ["Psicometría"] },
+          { name: "Integrity and Professional Ethics", req: ["Evaluación y Diagnóstico Psicológico"] }
+        ]
+      }
+    ]
+  },
+  // QUINTO AÑO
+  {
+    year: "QUINTO AÑO",
+    cycles: [
+      {
+        name: "Noveno ciclo",
+        courses: [
+          { name: "Seminario de Tesis", req: ["Metodología de la Investigación para Psicología"] },
+          { name: "Internado I", req: ["Integrity and Professional Ethics"] }
+        ]
+      },
+      {
+        name: "Décimo ciclo",
+        courses: [
+          { name: "Trabajo de investigación", req: ["Seminario de Tesis"] },
+          { name: "Internado II", req: ["Internado I"] }
+        ]
+      }
+    ]
+  }
+];
 
 const container = document.getElementById("curriculum");
+const counter = document.getElementById("progressCounter");
+
+function updateCounter() {
+  const totalApproved = Object.values(data).filter(v => v).length;
+  counter.textContent = `Ramos aprobados: ${totalApproved}`;
+}
 
 curriculum.forEach((yearBlock) => {
+  const yearDiv = document.createElement("div");
+  yearDiv.className = "year-block";
+  const yearTitle = document.createElement("div");
+  yearTitle.className = "year-title";
+  yearTitle.textContent = yearBlock.year;
+  yearDiv.appendChild(yearTitle);
+
+  const cycleContainer = document.createElement("div");
+  cycleContainer.className = "cycles";
+
   yearBlock.cycles.forEach((cycle) => {
     const col = document.createElement("div");
     col.className = "column";
-    col.innerHTML = `<h2>${yearBlock.year}<br>${cycle.name}</h2>`;
+    col.innerHTML = `<h2>${cycle.name}</h2>`;
 
     cycle.courses.forEach(c => {
       const course = document.createElement("div");
@@ -91,6 +275,7 @@ curriculum.forEach((yearBlock) => {
       let reqs = typeof c === 'string' ? [] : c.req;
       course.className = "course";
       course.textContent = name;
+
       if (data[name]) course.classList.add("approved");
 
       const isLocked = reqs.some(r => !data[r]);
@@ -103,16 +288,21 @@ curriculum.forEach((yearBlock) => {
       } else {
         course.addEventListener("click", () => {
           data[name] = !data[name];
-          localStorage.setItem("psych-curriculum-blue", JSON.stringify(data));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
           location.reload();
         });
       }
       col.appendChild(course);
     });
 
-    container.appendChild(col);
+    cycleContainer.appendChild(col);
   });
+
+  yearDiv.appendChild(cycleContainer);
+  container.appendChild(yearDiv);
 });
+
+updateCounter();
 
   </script>
 </body>
